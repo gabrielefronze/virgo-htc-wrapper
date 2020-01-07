@@ -28,8 +28,8 @@ if __name__ == "__main__":
     delay = seconds - 200
 
     def trigger():
-        return mainExe.is_alive and should_renew_proxy
+        return mainExe.is_alive() and should_renew_proxy()
 
-    sideExes = [satellite.makeWrapper("../proxyrearm-oneclick.sh @ {}".format(delay), trigger, customName = "proxyrearm")]
+    sideExes = [satellite.makeWrapper("proxyrearm/proxyrearm-oneclick.sh @ {}".format(delay), trigger, customName = "proxyrearm")]
 
     satellite.main(mainExe, sideExes)
