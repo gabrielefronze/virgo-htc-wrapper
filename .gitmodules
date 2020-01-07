@@ -1,0 +1,6 @@
+[submodule "proxyrearm"]
+	path = proxyrearm
+	url = https://github.com/gabrielefronze/proxyrearm
+[submodule "satel_lite"]
+	path = satel_lite
+	url = https://github.com/gabrielefronze/satel_lite.git
