@@ -4,3 +4,6 @@
 *.pem
 
 var/
+
+*.satellite.log
+*.satellite.err
