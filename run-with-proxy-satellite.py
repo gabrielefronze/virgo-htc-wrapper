@@ -3,8 +3,7 @@
 import argparse
 import satel_lite.satellite as satellite
 
-satellite.logDir="./"
-satellite.setLogDir()
+satellite.setLogDir("./logs")
 
 def should_renew_proxy():
     print("Checking for residual proxy validity")
