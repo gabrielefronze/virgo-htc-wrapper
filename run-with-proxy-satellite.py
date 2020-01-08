@@ -2,13 +2,9 @@
 
 import argparse
 import satel_lite.satellite as satellite
+from proxyrearm.python.shouldrenew import shouldRenew
 
 satellite.setLogDir("./logs")
-
-def should_renew_proxy():
-    print("Checking for residual proxy validity")
-    # TODO: verify proxy with something like voms-proxy-info -file ./vomsproxy.pem
-    return True
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='This is a process wrapper wich adds a proxyrearm satellite by default.')
@@ -22,13 +18,9 @@ if __name__ == "__main__":
     else:
         mainExe = satellite.makeWrapper(args.main, customName = args.name)
 
-    hours = 12
-    seconds = hours * 3600
-    delay = seconds - 200
+    repetitionInterval = 12 * 60 * 60 - 400 # 12 hours minus 400 seconds to have time to renew the proxy...
+    renewalThreshold = repetitionInterval/2 # doing it twice just for good measure
 
-    def trigger():
-        return mainExe.is_alive() and should_renew_proxy()
-
-    sideExes = [satellite.makeWrapper("proxyrearm/proxyrearm-oneclick.sh @ {}".format(delay), trigger, customName = "proxyrearm")]
+    sideExes = [satellite.makeWrapper("proxyrearm/proxyrearm-oneclick.sh @ {}".format(repetitionInterval), mainExe.is_alive(), customName = "proxyrearm")]
 
     satellite.main(mainExe, sideExes)
