@@ -7,3 +7,5 @@ var/
 
 *.satellite.log
 *.satellite.err
+*.sub
+
