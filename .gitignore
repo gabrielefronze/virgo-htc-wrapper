@@ -9,3 +9,5 @@ var/
 *.satellite.err
 *.sub
 
+
+__pycache__/
