@@ -23,7 +23,6 @@ def convertSub(sub_file_path, main_executable_name = None):
     output_sub_file_path = getConvertedSubPath(input_sub_file_path)
 
     input_sub = open(input_sub_file_path,"r")
-    output_sub = open(output_sub_file_path, "w+")
 
     executable_string = ''
     input_files = ''
@@ -45,6 +44,11 @@ def convertSub(sub_file_path, main_executable_name = None):
             arguments = purgeLineHeader(line)
             # print("arguments: "+arguments)
 
+    if executable_string == "run-with-proxy-satellite.py":
+        print("ERROR: this file has already been reworked!")
+        input_sub.close()
+        return
+
     new_input_files = input_files+','+','.join(required_input_files)+"\n"
     main_executable_as_args = "\'\"\""+"./"+executable_string+' '+arguments+"\"\"\'"
 
@@ -56,6 +60,7 @@ def convertSub(sub_file_path, main_executable_name = None):
     new_arguments = new_arguments+"\n"
 
     input_sub.seek(0)
+    output_sub = open(output_sub_file_path, "w+")
 
     for wline in input_sub:
         if wline.startswith("executable"):
@@ -76,6 +81,8 @@ def convertSub(sub_file_path, main_executable_name = None):
         else:
             output_sub.write(wline)
             # print(wline)
+
+    print("Reworked .sub file at: "+output_sub_file_path.as_posix())
 
     output_sub.close()
     input_sub.close()
