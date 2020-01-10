@@ -4,6 +4,7 @@ import os.path
 from pathlib import Path
 import subprocess
 import readline, glob
+import sys
 
 from proxyrearm.python.shouldrenew import getRemainingValidity
 from proxyrearm.python.getvomsproxy import getVOMSProxy
@@ -38,7 +39,12 @@ def convertSubfile():
     readline.parse_and_bind("tab: complete")
     readline.set_completer(complete)
     sub_file = input('.sub file path? ')
-    convertSub(sub_file)
+    return convertSub(sub_file)
+
+def condorSubmitWrapper(argv, sub_file_path : Path):
+    condor_sub_command = "condor_submit"+' '.join(argv)+" "+sub_file_path.as_posix()
+    print(condor_sub_command)
+    # subprocess.call(condor_sub_command.split())
 
 if __name__ == "__main__":
     print()
@@ -54,8 +60,9 @@ if __name__ == "__main__":
     print()
     print("---> Reworking .sub file to run the executable with proxy renewal sidecar...")
     print()
-    convertSubfile()
+    new_sub_file = convertSubfile()
 
     print()
     print("---> Submitting via condor_submit...")
     print()
+    condorSubmitWrapper(sys.argv[1:], new_sub_file)
