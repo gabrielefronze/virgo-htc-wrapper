@@ -44,11 +44,11 @@ def convertSubfile():
     readline.set_completer_delims(' \t\n;')
     readline.parse_and_bind("tab: complete")
     readline.set_completer(complete)
-    sub_file = input('.sub file path? ')
-    return convertSub(sub_file)
+    sub_file = input('Where is the original .sub file path? ')
+    return convertSub(sub_file, worker_node_log_dir="./logs")
 
 def condorSubmitWrapper(argv, sub_file_path : Path):
-    condor_sub_command = "condor_submit"+' '.join(argv)+" "+sub_file_path.as_posix()
+    condor_sub_command = "condor_submit "+' '.join(argv)+" "+sub_file_path.as_posix()
     print(condor_sub_command)
     # subprocess.call(condor_sub_command.split())
 
