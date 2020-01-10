@@ -18,7 +18,7 @@ def purgeLineHeader(line):
         new_line = new_line[1:]
     return new_line.rstrip("\n\r")
 
-def convertSub(sub_file_path, main_executable_name = None):
+def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name = None):
     input_sub_file_path = Path(os.path.abspath(sub_file_path))
     output_sub_file_path = getConvertedSubPath(input_sub_file_path)
 
@@ -26,9 +26,11 @@ def convertSub(sub_file_path, main_executable_name = None):
 
     executable_string = ''
     input_files = ''
+    output_files = ''
     arguments = ''
 
     input_files_found = False
+    output_files_found = False
     arguments_found = False
 
     for line in input_sub:
@@ -39,6 +41,10 @@ def convertSub(sub_file_path, main_executable_name = None):
             input_files_found = True
             input_files = purgeLineHeader(line)
             # print("input_files: "+input_files)
+        elif line.startswith("transfer_output_files"):
+            output_files_found = True
+            output_files = purgeLineHeader(line)
+            # print("output_files: "+output_files)
         elif line.startswith("arguments"):
             arguments_found = True
             arguments = purgeLineHeader(line)
@@ -69,6 +75,8 @@ def convertSub(sub_file_path, main_executable_name = None):
             if not input_files_found:
                 output_sub.write("transfer_input_files = "+new_input_files)
                 # print("transfer_input_files = "+new_input_files)
+            if not output_files_found and worker_node_log_dir:
+                output_sub.write("transfer_output_files = "+worker_node_log_dir+"\n")
             if not arguments_found:
                 output_sub.write("arguments = "+new_arguments)
                 # print("arguments = "+new_arguments)
@@ -78,9 +86,16 @@ def convertSub(sub_file_path, main_executable_name = None):
         elif wline.startswith("arguments"):
             output_sub.write("arguments = "+new_arguments)
             # print("arguments = "+new_arguments)
+        elif wline.startswith("transfer_output_files"):
+            if worker_node_log_dir:
+                output_sub.write("transfer_output_files = "+output_files+','+worker_node_log_dir+"\n")
+            else:
+                output_sub.write(wline)    
         else:
             output_sub.write(wline)
             # print(wline)
+    
+    output_sub.write("\n")
 
     print("Reworked .sub file at: "+output_sub_file_path.as_posix())
 
@@ -90,4 +105,4 @@ def convertSub(sub_file_path, main_executable_name = None):
     return output_sub_file_path
 
 if __name__ == "__main__":
-    convertSub("standard.sub", "my-pipeline")
+    convertSub("standard.sub", main_executable_name = "my-pipeline", worker_node_log_dir="./logs")
