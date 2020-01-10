@@ -15,14 +15,18 @@ def complete(text, state):
     return (glob.glob(text+'*'+".sub")+[None])[state]
 
 valid = {"yes": True, "y": True, "ye": True, "no": False, "n": False}
-def askQuestion(question, tabbing=''):
+def askQuestion(question, tabbing='', default=False):
+    if default:
+        options = " [Y/n] "
+    else:
+        options = " [N/y] "
+
     while True:
-        answer = input(tabbing+question+" [N/y] ")
+        answer = input(tabbing+question+options)
         if answer in valid:
             return valid[answer]
         else:
-            print(tabbing+"Unsupported. Defaulting to No.")
-            return False
+            return default
 
 def generateVOMSProxyIfNeeded():
     remaining_VOMS_time = getRemainingValidity()
