@@ -26,13 +26,15 @@ def askQuestion(question, tabbing=''):
 
 def generateVOMSProxyIfNeeded():
     remaining_VOMS_time = getRemainingValidity()
-    print("Current VOMS proxy lasts for {} seconds.".format(remaining_VOMS_time))
-    if askQuestion("Is it enough?"):
-        print("Skipping VOMS proxy creation.")
-    else:
-        print("Creating VOMS proxy for submission...")
-        command = "voms-proxy-init --voms virgo:/virgo/virgo"
-        subprocess.call(command.split())
+    if not remaining_VOMS_time == 0:
+        print("Current VOMS proxy lasts for {} seconds.".format(remaining_VOMS_time))
+        if askQuestion("Is it enough?"):
+            print("Skipping VOMS proxy creation.")
+            return
+   
+    print("Creating VOMS proxy for submission...")
+    command = "voms-proxy-init --voms virgo:/virgo/virgo"
+    subprocess.call(command.split())
 
 def convertSubfile():
     readline.set_completer_delims(' \t\n;')
