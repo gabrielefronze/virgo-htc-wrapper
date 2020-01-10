@@ -52,15 +52,33 @@ def condorSubmitWrapper(argv, sub_file_path : Path):
     print(condor_sub_command)
     # subprocess.call(condor_sub_command.split())
 
+def printSeparator():
+    print("/////////////////////////////////////////////////////////////////////////////////////////////////////////////////")
+
 if __name__ == "__main__":
-    print("\n---> Checking VOMS proxy status...\n")
-    generateVOMSProxyIfNeeded()        
+    printSeparator()
+    print("\nWelcome to the Virgo HTCondor submitter wrapper!\n")
+    print("This tool will perform the following operations:")
+    print("  1. Evaluate wether a VOMS x509 proxy is needed for the submission or not and generate it.")
+    print("  2. Generate a plain (without VOMS extensions) long lasting x509 proxy to be shipepd with the job.")
+    print("  3. Rework your (awesome!) HTCondor submit file to encapsulate your executable inside a proxy rearming service.")
+    print("  4. Submit the job using the standard condor_submit: all the arguments of this script will be passed through")
+    print("     to the condor_submit command. Therefore the standard HTCondor documentation applies wholefully.\n")
 
-    print("\n---> Creating 7 days long plain proxy to ship with the submitting job...\n")
-    generatePlainProxy("./plainproxy.pem", 168)
+    if askQuestion("Shall we start?", default=True):
+        print("\n---> Checking VOMS proxy status...\n")
+        generateVOMSProxyIfNeeded()        
 
-    print("\n---> Reworking .sub file to run the executable with proxy renewal sidecar...\n")
-    new_sub_file = convertSubfile()
+        print("\n---> Creating 7 days long plain proxy to be shipped with the submitting job...\n")
+        generatePlainProxy("./plainproxy.pem", 168)
 
-    print("\n---> Submitting via condor_submit...\n")
-    condorSubmitWrapper(sys.argv[1:], new_sub_file)
+        print("\n---> Reworking .sub file to run the executable with proxy renewal sidecar...\n")
+        new_sub_file = convertSubfile()
+
+        print("\n---> Submitting via condor_submit...\n")
+        condorSubmitWrapper(sys.argv[1:], new_sub_file)
+
+    else:
+        print("See you soon!")
+
+    printSeparator()
