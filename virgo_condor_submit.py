@@ -50,7 +50,7 @@ def convertSubfile():
 def condorSubmitWrapper(argv, sub_file_path : Path):
     condor_sub_command = "condor_submit "+' '.join(argv)+" "+sub_file_path.as_posix()
     print(condor_sub_command)
-    # subprocess.call(condor_sub_command.split())
+    subprocess.call(condor_sub_command.split())
 
 def printSeparator():
     print("/////////////////////////////////////////////////////////////////////////////////////////////////////////////////")
