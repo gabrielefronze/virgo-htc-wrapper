@@ -87,5 +87,7 @@ def convertSub(sub_file_path, main_executable_name = None):
     output_sub.close()
     input_sub.close()
 
+    return output_sub_file_path
+
 if __name__ == "__main__":
     convertSub("standard.sub", "my-pipeline")
