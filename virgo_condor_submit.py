@@ -49,22 +49,14 @@ def condorSubmitWrapper(argv, sub_file_path : Path):
     # subprocess.call(condor_sub_command.split())
 
 if __name__ == "__main__":
-    print()
-    print("---> Checking VOMS proxy status...")
-    print()
+    print("\n---> Checking VOMS proxy status...\n")
     generateVOMSProxyIfNeeded()        
 
-    print()
-    print("---> Creating 7 days long plain proxy to ship with the submitting job...")
-    print()
+    print("\n---> Creating 7 days long plain proxy to ship with the submitting job...\n")
     generatePlainProxy("./plainproxy.pem", 168)
 
-    print()
-    print("---> Reworking .sub file to run the executable with proxy renewal sidecar...")
-    print()
+    print("\n---> Reworking .sub file to run the executable with proxy renewal sidecar...\n")
     new_sub_file = convertSubfile()
 
-    print()
-    print("---> Submitting via condor_submit...")
-    print()
+    print("\n---> Submitting via condor_submit...\n")
     condorSubmitWrapper(sys.argv[1:], new_sub_file)
