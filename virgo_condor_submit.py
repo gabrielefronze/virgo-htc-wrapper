@@ -28,7 +28,7 @@ def askQuestion(question, tabbing='', default=False):
         else:
             return default
 
-def generateVOMSProxyIfNeeded():
+def generateVOMSProxyIfNeeded(voms_string="--voms virgo:/virgo/virgo"):
     remaining_VOMS_time = getRemainingValidity()
     if not remaining_VOMS_time == 0:
         print("Current VOMS proxy lasts for {} seconds.".format(remaining_VOMS_time))
@@ -36,8 +36,8 @@ def generateVOMSProxyIfNeeded():
             print("Skipping VOMS proxy creation.")
             return
    
-    print("Creating VOMS proxy for submission...")
-    command = "voms-proxy-init --voms virgo:/virgo/virgo"
+    print("\n---> Creating VOMS proxy for submission...\n")
+    command = "voms-proxy-init "+voms_string
     subprocess.call(command.split())
 
 def convertSubfile():
