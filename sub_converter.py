@@ -56,7 +56,7 @@ def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name =
         return
 
     new_input_files = input_files+','+','.join(required_input_files)+"\n"
-    main_executable_as_args = "\'\"\""+executable_string+' '+arguments.replace('\"', '\"\"').replace('\'', '\"\"')+"\"\"\'"
+    main_executable_as_args = "\'"+executable_string+' '+arguments.replace('\"', '').replace('\'', '')+"\'"
 
     if not main_executable_name:
         new_arguments = "\""+main_executable_as_args+"\""
