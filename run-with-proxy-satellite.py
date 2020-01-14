@@ -8,7 +8,7 @@ satellite.setLogDir("./logs")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='This is a process wrapper wich adds a proxyrearm satellite by default.')
-    parser.add_argument("main", type=str, required=True, help="Provide the main process launch command as a string (surrounded by quotes).")
+    parser.add_argument("main", type=str, help="Provide the main process launch command as a string (surrounded by quotes).")
     parser.add_argument("--name", "-n", type=str, help="Provide a custom name for the pipeline process wrapper.")
 
     args = parser.parse_args()
