@@ -21,6 +21,6 @@ if __name__ == "__main__":
     repetitionInterval = 12 * 60 * 60 - 400 # 12 hours minus 400 seconds to have time to renew the proxy...
     renewalThreshold = repetitionInterval/2 # doing it twice just for good measure
 
-    sideExes = [satellite.makeWrapper("proxyrearm/proxyrearm-oneclick.sh @ {}".format(repetitionInterval), mainExe.is_alive, customName = "proxyrearm")]
+    sideExes = [satellite.makeWrapper("proxyrearm/proxyrearm-oneclick.sh -f @ {}".format(repetitionInterval), mainExe.is_alive, customName = "proxyrearm")]
 
     satellite.main(mainExe, sideExes)
