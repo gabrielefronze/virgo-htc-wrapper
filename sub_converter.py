@@ -2,6 +2,7 @@
 
 import os.path
 from pathlib import Path
+from fastlog.python.fastlog import *
 
 required_input_files = ["./satel_lite", "./proxyrearm", "./plainproxy.pem"]
 
@@ -36,22 +37,18 @@ def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name =
     for line in input_sub:
         if line.startswith("executable"):
             executable_string = purgeLineHeader(line)
-            # print("executable: "+executable_string)            
         elif line.startswith("transfer_input_files"):
             input_files_found = True
             input_files = purgeLineHeader(line)
-            # print("input_files: "+input_files)
         elif line.startswith("transfer_output_files"):
             output_files_found = True
             output_files = purgeLineHeader(line)
-            # print("output_files: "+output_files)
         elif line.startswith("arguments"):
             arguments_found = True
             arguments = purgeLineHeader(line)
-            # print("arguments: "+arguments)
 
     if executable_string == "run-with-proxy-satellite.py":
-        print("ERROR: this file has already been reworked!")
+        fastlog(ERROR, "ERROR: this file has already been reworked!")
         input_sub.close()
         return
 
@@ -71,21 +68,16 @@ def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name =
     for wline in input_sub:
         if wline.startswith("executable"):
             output_sub.write("executable = run-with-proxy-satellite.py\n")
-            # print("executable = run-with-proxy-satellite.py")
             if not input_files_found:
                 output_sub.write("transfer_input_files = "+new_input_files)
-                # print("transfer_input_files = "+new_input_files)
             if not output_files_found and worker_node_log_dir:
                 output_sub.write("transfer_output_files = "+worker_node_log_dir+"\n")
             if not arguments_found:
                 output_sub.write("arguments = "+new_arguments)
-                # print("arguments = "+new_arguments)
         elif wline.startswith("transfer_input_files"):
             output_sub.write("transfer_input_files = "+new_input_files)
-            # print("transfer_input_files = "+new_input_files)
         elif wline.startswith("arguments"):
             output_sub.write("arguments = "+new_arguments)
-            # print("arguments = "+new_arguments)
         elif wline.startswith("transfer_output_files"):
             if worker_node_log_dir:
                 output_sub.write("transfer_output_files = "+output_files+','+worker_node_log_dir+"\n")
@@ -93,11 +85,10 @@ def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name =
                 output_sub.write(wline)    
         else:
             output_sub.write(wline)
-            # print(wline)
     
     output_sub.write("\n")
 
-    print("Reworked .sub file at: "+output_sub_file_path.as_posix())
+    fastlog(DEBUG, "Reworked .sub file at: "+output_sub_file_path.as_posix())
 
     output_sub.close()
     input_sub.close()
