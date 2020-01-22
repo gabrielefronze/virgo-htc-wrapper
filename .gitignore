@@ -11,3 +11,5 @@ var/
 
 
 __pycache__/
+
+wrapper-script-standard.sh
