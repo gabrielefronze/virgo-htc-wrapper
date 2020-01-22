@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    if args.name:
+    if not args.name:
         mainExe = satellite.makeWrapper(args.main, customName = "pipeline")
     else:
         mainExe = satellite.makeWrapper(args.main, customName = args.name)
