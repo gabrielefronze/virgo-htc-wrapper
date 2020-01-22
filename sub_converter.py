@@ -91,11 +91,11 @@ def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name =
             if not output_files_found and worker_node_log_dir:
                 output_sub.write("transfer_output_files = "+worker_node_log_dir+"\n")
             if not arguments_found:
-                output_sub.write("arguments = ./"+script_path_relative)
+                output_sub.write("arguments = "+script_path_relative)
         elif wline.startswith("transfer_input_files"):
             output_sub.write("transfer_input_files = "+new_input_files)
         elif wline.startswith("arguments"):
-            output_sub.write("arguments = ./"+script_path_relative)
+            output_sub.write("arguments = "+script_path_relative)
         elif wline.startswith("transfer_output_files"):
             if worker_node_log_dir:
                 output_sub.write("transfer_output_files = "+output_files+','+worker_node_log_dir+"\n")
