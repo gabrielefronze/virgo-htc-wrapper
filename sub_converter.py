@@ -13,6 +13,13 @@ def getConvertedSubPath(input_sub_file_path : Path):
 
     return output_sub_file_path
 
+def getScriptPath(input_sub_file_path : Path):
+    script_path_parts = list(input_sub_file_path.parts)
+    script_path_parts[-1] = ("wrapper-script-"+script_path_parts[-1]).replace('.sub','.sh')
+    script_path = Path('/'.join(script_path_parts))
+
+    return script_path, './'+script_path_parts[-1]
+
 def purgeLineHeader(line):
     new_line = line.split('=')[-1]
     if new_line[0] is ' ':
@@ -22,6 +29,7 @@ def purgeLineHeader(line):
 def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name = None):
     input_sub_file_path = Path(os.path.abspath(sub_file_path))
     output_sub_file_path = getConvertedSubPath(input_sub_file_path)
+    script_path, script_path_relative = getScriptPath(input_sub_file_path)
 
     input_sub = open(input_sub_file_path,"r")
 
@@ -52,18 +60,17 @@ def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name =
         input_sub.close()
         return
 
-    new_input_files = input_files+','+','.join(required_input_files)+"\n"
-    main_executable_as_args = "\'"+executable_string+' '+arguments.replace('\"', '').replace('\'', '')+"\'"
-
-    if not main_executable_name:
-        new_arguments = "\""+main_executable_as_args+"\""
-    else:
-        new_arguments = "\""+main_executable_as_args+" --name {}".format(main_executable_name.replace(' ',''))+"\""
-
-    new_arguments = new_arguments+"\n"
+    new_input_files = input_files+','+script_path_relative+','+','.join(required_input_files)+"\n"
 
     input_sub.seek(0)
+    
     output_sub = open(output_sub_file_path, "w+")
+
+    output_script = open(script_path, "w+")
+    output_script.write('#! /bin/bash\n')
+    output_script.write('./'+executable_string+' '+arguments)
+    output_script.write("\n\n")
+    output_script.close()
 
     for wline in input_sub:
         if wline.startswith("executable"):
@@ -73,16 +80,16 @@ def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name =
             if not output_files_found and worker_node_log_dir:
                 output_sub.write("transfer_output_files = "+worker_node_log_dir+"\n")
             if not arguments_found:
-                output_sub.write("arguments = "+new_arguments)
+                output_sub.write("arguments = "+script_path_relative)
         elif wline.startswith("transfer_input_files"):
             output_sub.write("transfer_input_files = "+new_input_files)
         elif wline.startswith("arguments"):
-            output_sub.write("arguments = "+new_arguments)
+            output_sub.write("arguments = "+script_path_relative)
         elif wline.startswith("transfer_output_files"):
             if worker_node_log_dir:
                 output_sub.write("transfer_output_files = "+output_files+','+worker_node_log_dir+"\n")
             else:
-                output_sub.write(wline)    
+                output_sub.write(wline) 
         else:
             output_sub.write(wline)
     
