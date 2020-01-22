@@ -64,7 +64,10 @@ def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name =
         input_sub.close()
         return
 
-    new_input_files = input_files+','+script_path_relative+','+','.join(required_input_files)+"\n"
+    if input_files_found:
+        input_files = input_files+','
+
+    new_input_files = input_files+script_path_relative+','+','.join(required_input_files)+"\n"
 
     input_sub.seek(0)
     
