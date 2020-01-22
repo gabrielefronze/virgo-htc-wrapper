@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 
+import os
 import os.path
 from pathlib import Path
 from fastlog.python.fastlog import *
@@ -12,6 +13,9 @@ def getConvertedSubPath(input_sub_file_path : Path):
     output_sub_file_path = Path('/'.join(output_sub_file_path_parts).replace('//','/'))
 
     return output_sub_file_path
+
+def is_exe(fpath):
+    return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
 def getScriptPath(input_sub_file_path : Path):
     script_path_parts = list(input_sub_file_path.parts)
@@ -68,7 +72,11 @@ def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name =
 
     output_script = open(script_path, "w+")
     output_script.write('#! /bin/bash\n')
-    output_script.write('./'+executable_string+' '+arguments)
+
+    if is_exe(executable_string):
+        executable_string = './'+executable_string
+
+    output_script.write(executable_string+' '+arguments)
     output_script.write("\n\n")
     output_script.close()
 
