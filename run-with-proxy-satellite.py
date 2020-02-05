@@ -33,6 +33,6 @@ if __name__ == "__main__":
 
     fastlog(DEBUG, "Proxy renewal interval set to {}".format(renewalThreshold))
 
-    sideExes = [satellite.makeWrapper("proxyrearm/proxyrearm-oneclick.sh -f @ {}".format(renewalThreshold), mainExe.is_alive, customName = "proxyrearm")]
+    sideExes = [satellite.makeWrapper("proxyrearm/proxyrearm-oneclick_htc.sh -f @ {}".format(renewalThreshold), mainExe.is_alive, customName = "proxyrearm")]
 
     satellite.main(mainExe, sideExes)
