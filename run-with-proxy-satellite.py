@@ -9,16 +9,18 @@ satellite.setLogDir("./logs")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='This is a process wrapper wich adds a proxyrearm satellite by default.')
-    parser.add_argument("main", type=str, nargs=argparse.REMAINDER, help="Provide the main process launch command as a string (surrounded by quotes).")
+    parser.add_argument("main", nargs=argparse.REMAINDER, help="Provide the main process launch command as a string (surrounded by quotes).")
     parser.add_argument("--name", "-n", type=str, help="Provide a custom name for the pipeline process wrapper.")
     parser.add_argument("--interval", "-i", type=int, help="Provide the proxy renewal interval in seconds.")
 
     args = parser.parse_args()
 
+    main_command = ' '.join(args.main)
+
     if not args.name:
-        mainExe = satellite.makeWrapper(' '.join(args.main), customName = "pipeline")
+        mainExe = satellite.makeWrapper(main_command, customName = "pipeline")
     else:
-        mainExe = satellite.makeWrapper(' '.join(args.main), customName = args.name)
+        mainExe = satellite.makeWrapper(main_command, customName = args.name)
 
     renewalThreshold = 0
 
