@@ -3,7 +3,7 @@
 import argparse
 import satel_lite.satellite as satellite
 from proxyrearm.python.shouldrenew import shouldRenew
-from fastlog.python import fastlog
+from fastlog.python.fastlog import *
 
 satellite.setLogDir("./logs")
 
@@ -26,7 +26,7 @@ if __name__ == "__main__":
         repetitionInterval = 12 * 60 * 60 - 400 # 12 hours minus 400 seconds to have time to renew the proxy...
         renewalThreshold = repetitionInterval/2 # doing it twice just for good measure
     else:
-        renewalThreshold = (int)args.interval
+        renewalThreshold = args.interval
 
 
     fastlog(DEBUG, "Proxy renewal interval set to {}".format(renewalThreshold))
