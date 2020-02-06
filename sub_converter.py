@@ -5,7 +5,7 @@ import os.path
 from pathlib import Path
 from fastlog.python.fastlog import *
 
-required_input_files = ["./satel_lite", "./proxyrearm", "./fastlog", "./plainproxy.pem"]
+required_input_files = ["./satel_lite", "./proxyrearm", "./plainproxy.pem"]
 
 def getConvertedSubPath(input_sub_file_path : Path):
     output_sub_file_path_parts = list(input_sub_file_path.parts)
