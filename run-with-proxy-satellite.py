@@ -3,7 +3,6 @@
 import argparse
 import satel_lite.satellite as satellite
 from proxyrearm.python.shouldrenew import shouldRenew
-from fastlog.python.fastlog import *
 
 satellite.setLogDir("./logs")
 
@@ -30,8 +29,7 @@ if __name__ == "__main__":
     else:
         renewalThreshold = args.interval
 
-
-    fastlog(DEBUG, "Proxy renewal interval set to {}".format(renewalThreshold))
+    print("Proxy renewal interval set to {}".format(renewalThreshold))
 
     sideExes = [satellite.makeWrapper("proxyrearm/proxyrearm-oneclick_htc.sh -f @ {}".format(renewalThreshold), mainExe.is_alive, customName = "proxyrearm")]
 
