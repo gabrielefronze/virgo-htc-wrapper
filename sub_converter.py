@@ -2,6 +2,7 @@
 
 import os
 import os.path
+import stat
 from pathlib import Path
 from fastlog.python.fastlog import *
 
@@ -103,6 +104,8 @@ def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name =
     output_script.write(executable_string+' '+arguments)
     output_script.write("\n\n")
     output_script.close()
+    st = os.stat(script_path)
+    os.chmod(script_path, st.st_mode | stat.S_IEXEC)
 
     for wline in input_sub:
         if wline.startswith("executable"):
