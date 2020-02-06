@@ -14,8 +14,14 @@ def getConvertedSubPath(input_sub_file_path : Path):
 
     return output_sub_file_path
 
+def is_file(fpath):
+    return os.path.isfile(fpath)
+
 def is_exe(fpath):
-    return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+    return os.access(fpath, os.X_OK)
+
+def is_abs_path(fpath):
+    return fpath == os.path.abspath(fpath)
 
 def getScriptPath(input_sub_file_path : Path):
     script_path_parts = list(input_sub_file_path.parts)
@@ -30,7 +36,7 @@ def purgeLineHeader(line):
         new_line = new_line[1:]
     return new_line.rstrip("\n\r")
 
-def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name = None):
+def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name = None, ignore_exe_not_found=False):
     input_sub_file_path = Path(os.path.abspath(sub_file_path))
     output_sub_file_path = getConvertedSubPath(input_sub_file_path)
     script_path, script_path_relative = getScriptPath(input_sub_file_path)
@@ -76,8 +82,23 @@ def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name =
     output_script = open(script_path, "w+")
     output_script.write('#! /bin/bash\n')
 
-    if is_exe(executable_string):
-        executable_string = './'+executable_string
+    if is_file(executable_string):
+        if is_exe(executable_string):
+            if not is_abs_path(executable_string):
+                fastlog(DEBUG,"The file is executable but need the prepention of \"./\"")
+                executable_string = './'+executable_string
+        else:
+            fastlog(WARNING,"Warning: {} is not (an) executable. Try running \"chmod +x {}\"".format(executable_string,executable_string))
+            return
+    else:
+        if not ignore_exe_not_found:
+            fastlog(ERROR,"Error: the executable cannot be located. Aborting.")
+            return
+        else:
+            if not is_abs_path(executable_string):
+                fastlog(DEBUG,"The file is executable but need the prepention of \"./\"")
+                executable_string = './'+executable_string
+
 
     output_script.write(executable_string+' '+arguments)
     output_script.write("\n\n")
@@ -114,4 +135,4 @@ def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name =
     return output_sub_file_path
 
 if __name__ == "__main__":
-    convertSub("standard.sub", main_executable_name = "my-pipeline", worker_node_log_dir="./logs")
+    convertSub("standard.sub", main_executable_name = "my-pipeline", worker_node_log_dir="./logs", ignore_exe_not_found=True)
