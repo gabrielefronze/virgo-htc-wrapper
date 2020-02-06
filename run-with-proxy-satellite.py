@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     if not args.interval:
         repetitionInterval = 12 * 60 * 60 - 400 # 12 hours minus 400 seconds to have time to renew the proxy...
-        renewalThreshold = repetitionInterval/2 # doing it twice just for good measure
+        renewalThreshold = int(round(repetitionInterval/2)) # doing it twice just for good measure
     else:
         renewalThreshold = args.interval
 
