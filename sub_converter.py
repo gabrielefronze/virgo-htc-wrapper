@@ -14,7 +14,7 @@ def getConvertedSubPath(input_sub_file_path : Path, useCVMFS=False):
     if useCVMFS:
         output_sub_file_path_parts[-1] = "converted-cvmfs-"+output_sub_file_path_parts[-1]
     else:
-    output_sub_file_path_parts[-1] = "converted-"+output_sub_file_path_parts[-1]
+        output_sub_file_path_parts[-1] = "converted-"+output_sub_file_path_parts[-1]
     output_sub_file_path = Path('/'.join(output_sub_file_path_parts).replace('//','/'))
 
     return output_sub_file_path
@@ -113,7 +113,7 @@ def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name =
     new_input_files = input_files+script_path_relative+",./plainproxy.pem"
 
     if useCVMFS:
-        virgo_wrapper="."+CVMFS_repo_path+"/"+virgo_wrapper
+        virgo_wrapper=CVMFS_repo_path+"/"+virgo_wrapper
     else:
         new_input_files = new_input_files+','+','.join(required_input_files)
 
@@ -122,6 +122,8 @@ def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name =
     for wline in input_sub:
         if wline.startswith("executable"):
             output_sub.write("executable = {}\n".format(virgo_wrapper))
+            if useCVMFS:
+                output_sub.write("transfer_executable = false\n")
             if not input_files_found:
                 output_sub.write("transfer_input_files = "+new_input_files)
             if not output_files_found and worker_node_log_dir:
