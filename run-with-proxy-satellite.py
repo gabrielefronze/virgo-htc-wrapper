@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     print("Proxy renewal interval set to {}".format(renewalThreshold))
 
-    pathname = os.path.dirname(sys.argv[0])
+    pathname = os.path.dirname(os.path.realpath(sys.argv[0]))
 
     sideExes = [satellite.makeWrapper("{}/proxyrearm/proxyrearm-oneclick_htc.sh -f @ {}".format(pathname, renewalThreshold), mainExe.is_alive, customName = "proxyrearm")]
 
