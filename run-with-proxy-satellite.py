@@ -29,7 +29,6 @@ if __name__ == "__main__":
         repetitionInterval = 12 * 60 * 60 - 600 # 12 hours minus 400 seconds to have time to renew the proxy...
         renewalThreshold = int(round(repetitionInterval/2)) # doing it twice just for good measure
         firstDelay = random.SystemRandom().randint(0, 400)
-        print(firstDelay)
     else:
         renewalThreshold = args.interval
 
