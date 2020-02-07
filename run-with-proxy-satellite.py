@@ -3,6 +3,7 @@
 import argparse
 import satel_lite.satellite as satellite
 from proxyrearm.python.shouldrenew import shouldRenew
+import sys, os
 
 satellite.setLogDir("./logs")
 
@@ -31,6 +32,8 @@ if __name__ == "__main__":
 
     print("Proxy renewal interval set to {}".format(renewalThreshold))
 
-    sideExes = [satellite.makeWrapper("./proxyrearm/proxyrearm-oneclick_htc.sh -f @ {}".format(renewalThreshold), mainExe.is_alive, customName = "proxyrearm")]
+    pathname = os.path.dirname(sys.argv[0])
+
+    sideExes = [satellite.makeWrapper("{}/proxyrearm/proxyrearm-oneclick_htc.sh -f @ {}".format(pathname, renewalThreshold), mainExe.is_alive, customName = "proxyrearm")]
 
     satellite.main(mainExe, sideExes)
