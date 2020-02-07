@@ -42,13 +42,15 @@ def generateVOMSProxyIfNeeded(voms_string="--voms virgo:/virgo/virgo"):
     command = "voms-proxy-init "+voms_string
     subprocess.call(command.split())
 
-def convertSubfile():
-    readline.set_completer_delims(' \t\n;')
-    readline.parse_and_bind("tab: complete")
-    readline.set_completer(complete)
-    fastlog(WARNING, 'Where is the original .sub file path? ')
-    sub_file = input()
-    return convertSub(sub_file, worker_node_log_dir="./logs")
+def convertSubfile(useCVMFS=False, subFilePath=None):
+    sub_file = subFilePath
+    if not sub_file:
+        readline.set_completer_delims(' \t\n;')
+        readline.parse_and_bind("tab: complete")
+        readline.set_completer(complete)
+        fastlog(WARNING, 'Where is the original .sub file path? ')
+        sub_file = input()
+    return convertSub(sub_file, worker_node_log_dir="./logs", useCVMFS=useCVMFS, ignore_exe_not_found=True)
 
 def condorSubmitWrapper(argv, sub_file_path : Path):
     condor_sub_command = "condor_submit "+' '.join(argv)+" "+sub_file_path.as_posix()
@@ -76,10 +78,23 @@ if __name__ == "__main__":
         generatePlainProxy("./plainproxy.pem", 168)
 
         fastlog(INFO, "\n---> Reworking .sub file to run the executable with proxy renewal sidecar...\n")
-        new_sub_file = convertSubfile()
+        use_CVMFS = False
+        if "--cvmfs" in sys.argv:
+            use_CVMFS = True
+            fastlog(INFO, "Relying on CVMFS.")
+        
+        sub_file = None
+        for arg in sys.argv:
+            if arg.endswith(".sub"):
+                sub_file = os.path.realpath(arg)
+                fastlog(INFO, "Using {} as submit file".format(sub_file))
+                break
+
+        new_sub_file = convertSubfile(use_CVMFS, sub_file)
 
         fastlog(INFO, "\n---> Submitting via condor_submit...\n")
-        condorSubmitWrapper(sys.argv[1:], new_sub_file)
+        new_argv = [arg for arg in sys.argv[1:] if (not arg=="--cvmfs" and not arg.endswith(".sub"))]
+        condorSubmitWrapper(new_argv, new_sub_file)
 
     else:
         fastlog(WARNING, "See you soon!")
