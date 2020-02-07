@@ -9,8 +9,11 @@ from fastlog.python.fastlog import *
 required_input_files = ["./satel_lite", "./proxyrearm"]
 CVMFS_repo_path = "/cvmfs/virgo.ego-gw.it/tests/virgo-htc-wrapper"
 
-def getConvertedSubPath(input_sub_file_path : Path):
+def getConvertedSubPath(input_sub_file_path : Path, useCVMFS=False):
     output_sub_file_path_parts = list(input_sub_file_path.parts)
+    if useCVMFS:
+        output_sub_file_path_parts[-1] = "converted-cvmfs-"+output_sub_file_path_parts[-1]
+    else:
     output_sub_file_path_parts[-1] = "converted-"+output_sub_file_path_parts[-1]
     output_sub_file_path = Path('/'.join(output_sub_file_path_parts).replace('//','/'))
 
@@ -40,7 +43,7 @@ def purgeLineHeader(line):
 
 def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name = None, ignore_exe_not_found=False, useCVMFS=False):
     input_sub_file_path = Path(os.path.abspath(sub_file_path))
-    output_sub_file_path = getConvertedSubPath(input_sub_file_path)
+    output_sub_file_path = getConvertedSubPath(input_sub_file_path, useCVMFS)
     script_path, script_path_relative = getScriptPath(input_sub_file_path)
 
     input_sub = open(input_sub_file_path,"r")
