@@ -4,6 +4,7 @@ import argparse
 import satel_lite.satellite as satellite
 from proxyrearm.python.shouldrenew import shouldRenew
 import sys, os
+import random
 
 satellite.setLogDir("./logs")
 
@@ -25,8 +26,10 @@ if __name__ == "__main__":
     renewalThreshold = 0
 
     if not args.interval:
-        repetitionInterval = 12 * 60 * 60 - 400 # 12 hours minus 400 seconds to have time to renew the proxy...
+        repetitionInterval = 12 * 60 * 60 - 600 # 12 hours minus 400 seconds to have time to renew the proxy...
         renewalThreshold = int(round(repetitionInterval/2)) # doing it twice just for good measure
+        firstDelay = random.SystemRandom().randint(0, 400)
+        print(firstDelay)
     else:
         renewalThreshold = args.interval
 
@@ -34,6 +37,6 @@ if __name__ == "__main__":
 
     pathname = os.path.dirname(os.path.realpath(sys.argv[0]))
 
-    sideExes = [satellite.makeWrapper("{}/proxyrearm/proxyrearm-oneclick_htc.sh -f @ {}".format(pathname, renewalThreshold), mainExe.is_alive, customName = "proxyrearm")]
+    sideExes = [satellite.makeWrapper("{}/proxyrearm/proxyrearm-oneclick_htc.sh -f @ {}".format(pathname, renewalThreshold), mainExe.is_alive, customName = "proxyrearm", firstDelay = firstDelay)]
 
     satellite.main(mainExe, sideExes)
