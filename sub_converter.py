@@ -6,7 +6,8 @@ import stat
 from pathlib import Path
 from fastlog.python.fastlog import *
 
-required_input_files = ["./satel_lite", "./proxyrearm", "./plainproxy.pem"]
+required_input_files = ["./satel_lite", "./proxyrearm"]
+CVMFS_repo_path = "/cvmfs/virgo.ego-gw.it/tests/virgo-htc-wrapper"
 
 def getConvertedSubPath(input_sub_file_path : Path):
     output_sub_file_path_parts = list(input_sub_file_path.parts)
@@ -37,7 +38,7 @@ def purgeLineHeader(line):
         new_line = new_line[1:]
     return new_line.rstrip("\n\r")
 
-def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name = None, ignore_exe_not_found=False):
+def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name = None, ignore_exe_not_found=False, useCVMFS=False):
     input_sub_file_path = Path(os.path.abspath(sub_file_path))
     output_sub_file_path = getConvertedSubPath(input_sub_file_path)
     script_path, script_path_relative = getScriptPath(input_sub_file_path)
@@ -74,8 +75,6 @@ def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name =
     if input_files_found:
         input_files = input_files+','
 
-    new_input_files = input_files+script_path_relative+','+','.join(required_input_files)+"\n"
-
     input_sub.seek(0)
     
     output_sub = open(output_sub_file_path, "w+")
@@ -107,9 +106,19 @@ def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name =
     st = os.stat(script_path)
     os.chmod(script_path, st.st_mode | stat.S_IEXEC)
 
+    virgo_wrapper = "run-with-proxy-satellite.py"
+    new_input_files = input_files+script_path_relative+",./plainproxy.pem"
+
+    if useCVMFS:
+        virgo_wrapper="."+CVMFS_repo_path+"/"+virgo_wrapper
+    else:
+        new_input_files = new_input_files+','+','.join(required_input_files)
+
+    new_input_files = new_input_files+"\n"
+
     for wline in input_sub:
         if wline.startswith("executable"):
-            output_sub.write("executable = run-with-proxy-satellite.py\n")
+            output_sub.write("executable = {}\n".format(virgo_wrapper))
             if not input_files_found:
                 output_sub.write("transfer_input_files = "+new_input_files)
             if not output_files_found and worker_node_log_dir:
@@ -138,4 +147,4 @@ def convertSub(sub_file_path, worker_node_log_dir = None, main_executable_name =
     return output_sub_file_path
 
 if __name__ == "__main__":
-    convertSub("standard.sub", main_executable_name = "my-pipeline", worker_node_log_dir="./logs", ignore_exe_not_found=True)
+    convertSub("standard.sub", main_executable_name = "my-pipeline", worker_node_log_dir="./logs", ignore_exe_not_found=True, useCVMFS=True)
