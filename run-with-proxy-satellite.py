@@ -1,12 +1,8 @@
 #! /usr/bin/env python3
 
 import argparse
-import satel_lite.satellite as satellite
-from proxyrearm.python.shouldrenew import shouldRenew
 import sys, os
 import random
-
-satellite.setLogDir("./logs")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='This is a process wrapper wich adds a proxyrearm satellite by default.')
@@ -18,6 +14,15 @@ if __name__ == "__main__":
 
     main_command = ' '.join(args.main)
 
+    pathname = os.path.dirname(os.path.realpath(sys.argv[0]))
+    
+    sys.path.append(pathname)
+
+    import satel_lite.satellite as satellite
+    from proxyrearm.python.shouldrenew import shouldRenew
+
+    satellite.setLogDir(pathname+"/logs")
+
     if not args.name:
         mainExe = satellite.makeWrapper(main_command, customName = "pipeline")
     else:
@@ -26,15 +31,13 @@ if __name__ == "__main__":
     renewalThreshold = 0
 
     if not args.interval:
-        repetitionInterval = 12 * 60 * 60 - 600 # 12 hours minus 400 seconds to have time to renew the proxy...
+        repetitionInterval = 12 * 60 * 60 - 800 # 12 hours minus 400 seconds to have time to renew the proxy...
         renewalThreshold = int(round(repetitionInterval/2)) # doing it twice just for good measure
         firstDelay = random.SystemRandom().randint(0, 400)
     else:
         renewalThreshold = args.interval
 
     print("Proxy renewal interval set to {}".format(renewalThreshold))
-
-    pathname = os.path.dirname(os.path.realpath(sys.argv[0]))
 
     sideExes = [satellite.makeWrapper("{}/proxyrearm/proxyrearm-oneclick_htc.sh -f @ {}".format(pathname, renewalThreshold), mainExe.is_alive, customName = "proxyrearm", firstDelay = firstDelay)]
 
