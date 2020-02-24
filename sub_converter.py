@@ -5,6 +5,7 @@ import os.path
 import stat
 from pathlib import Path
 from fastlog.python.fastlog import *
+from file_test_utils import *
 
 required_input_files = ["./satel_lite", "./proxyrearm"]
 CVMFS_repo_path = "/cvmfs/virgo.ego-gw.it/tests/virgo-htc-wrapper"
@@ -18,15 +19,6 @@ def getConvertedSubPath(input_sub_file_path : Path, useCVMFS=False):
     output_sub_file_path = Path('/'.join(output_sub_file_path_parts).replace('//','/'))
 
     return output_sub_file_path
-
-def is_file(fpath):
-    return os.path.isfile(fpath)
-
-def is_exe(fpath):
-    return os.access(fpath, os.X_OK)
-
-def is_abs_path(fpath):
-    return fpath == os.path.abspath(fpath)
 
 def getScriptPath(input_sub_file_path : Path):
     script_path_parts = list(input_sub_file_path.parts)
