@@ -113,6 +113,10 @@ def getGWDataFindQueries(query):
 
     return queries
 
+def getGWDataFindURLs(query):
+    urls = queryGWDataFind(query)
+    fastlog(DEBUG, "Found {} files".format(len(urls)))
+    return urls
 def createDir(path):
     try:
         os.stat(path)
