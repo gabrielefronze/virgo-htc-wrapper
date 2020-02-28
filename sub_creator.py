@@ -117,6 +117,7 @@ def getGWDataFindURLs(query):
     urls = queryGWDataFind(query)
     fastlog(DEBUG, "Found {} files".format(len(urls)))
     return urls
+
 def createDir(path):
     try:
         os.stat(path)
@@ -149,6 +150,11 @@ def combineLists(args):
         fastlog(INFO, "\tObtained {} files in list {}.".format(len(filesList), i+1))
 
     fastlog(INFO, "Generating input lists and submit files from template .sub .")
+    lenght = len(filesLists[0])
+    for list in filesLists[1:]:
+        if not len(list) == lenght:
+            fastlog(WARNING, "Input file lists are not of equal lenght. Inputs concatenation will crop all the lists to the lenght of the shortest one.")
+
     inputs = zip(*filesLists)
 
     return inputs
